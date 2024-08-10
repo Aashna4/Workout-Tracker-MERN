@@ -1,5 +1,6 @@
 import { useEffect} from "react"
 import { useWorkoutContext } from "../hooks/useWorkoutContext"
+import { useAuthContext } from "../hooks/useAuthContext"
 
 // components
 import WorkoutDetails from "../components/WorkoutDetails"
@@ -9,11 +10,16 @@ const Home = () => {
     // const [workouts, setWorkouts] = useState()
 
     const {workouts, dispatch} = useWorkoutContext()
+    const { user } = useAuthContext()
 
     useEffect(() => {
         // to make the function async we define another function which can be called
         const fetchWorkouts = async() => {
-            const response = await fetch('/api/workouts')
+            const response = await fetch('/api/workouts', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
             const json = await response.json()
 
             if (response.ok){
@@ -22,9 +28,11 @@ const Home = () => {
             }
         }   
 
-        fetchWorkouts()
+        if (user){
+            fetchWorkouts()
+        }
 
-    }, [dispatch]) //[] - makes sure that it will fire only once when the component renders
+    }, [dispatch, user]) //[] - makes sure that it will fire only once when the component renders
 
     return (
         <div className="home">

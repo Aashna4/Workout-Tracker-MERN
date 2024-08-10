@@ -2,8 +2,10 @@
 
 import { useState } from "react"
 import { useWorkoutContext } from "../hooks/useWorkoutContext"
+import { useAuthContext } from "../hooks/useAuthContext"
 
 const WorkoutsForm = () => {
+    const { user } = useAuthContext()
     const {dispatch} = useWorkoutContext() 
     // initial value is an empty string
     const [title, setTitle] = useState('')
@@ -16,13 +18,19 @@ const WorkoutsForm = () => {
         // default action of submit form is to refresh the page, thus to avoid that we use preventDefault
         e.preventDefault()
 
+        if (!user) {
+            setError('You must be logged in.')
+            return
+        }
+
         const workout = {title, load, reps}
 
         const response = await fetch('/api/workouts', {
             method: 'POST',
             body: JSON.stringify(workout),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             }
         })
 
