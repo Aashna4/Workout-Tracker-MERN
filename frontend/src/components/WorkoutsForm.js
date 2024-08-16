@@ -44,7 +44,6 @@ const WorkoutsForm = () => {
         if(response.ok) {
             setError(null)
             setEmptyFields([])
-            console.log("New workout added", json)
 
             setTitle('')
             setLoad('')
